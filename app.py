@@ -128,7 +128,7 @@ measurement_value = st.number_input(
     min_value=0.0,
     step=0.1
 )
-unit = st.radio("Unit:", ("mm", "cm"))
+unit = st.radio("Unit:", ("cm", "mm"))
 
 # 4) Helper: convert any cm→mm
 def to_mm(val, unit):
