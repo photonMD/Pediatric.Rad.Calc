@@ -175,39 +175,34 @@ def format_age_range(min_mo, max_mo):
         return f"{int(min_mo)}–{int(max_mo)} mo"
 
 # 6) When user clicks, do the calculation
+# --- Compute Z-Score block ---
 if st.button("Compute Z-Score"):
+    # 1) Parse inputs
     age_months = parse_age_to_months(age_input)
-    meas_mm = to_mm(measurement_value, unit)
+    meas_mm    = to_mm(measurement_value, unit)
+    key        = organ_key
+    table      = norms[key]
 
-    # use the selected key
-    key = organ_key
-
-    # grab the correct table
-    table = norms[key]
+    # 2) Find matching row or fallback
     match = table[
-        (table.age_min_months <= age_months)
-        & (age_months <= table.age_max_months)
+        (table.age_min_months <= age_months) &
+        (age_months <= table.age_max_months)
     ]
-
     if match.empty:
-        # choose nearest row
-        first_min = table.age_min_months.min()
-        last_max  = table.age_max_months.max()
-
-        if age_months < first_min:
+        # fallback to first or last row
+        if age_months < table.age_min_months.min():
             row = table.iloc[0]
         else:
             row = table.iloc[-1]
-
         st.warning(
             f"Age ({age_input}) out of range. "
-            f"Using nearest normative data for "
-            f"{int(row.age_min_months)}–{int(row.age_max_months)} months."
+            f"Using nearest data for "
+            f"{format_age_range(row.age_min_months, row.age_max_months)}."
         )
     else:
         row = match.iloc[0]
 
-    # now compute z‐score on whichever row we have
+    # 3) Compute z and interpretation
     z = (meas_mm - row.mean_mm) / row.sd_mm
     if z > 2:
         verdict = "Too large"
@@ -218,7 +213,11 @@ if st.button("Compute Z-Score"):
 
     st.write(f"**Z-score:** {z:.2f}")
     st.write(f"**Interpretation:** {verdict}")
-    # Convert reference stats into the selected unit
+
+    # 4) Format age label
+    age_label = format_age_range(row.age_min_months, row.age_max_months)
+
+    # 5) Convert reference stats into selected unit
     if unit == "cm":
         mean_ref = row.mean_mm / 10
         sd_ref   = row.sd_mm   / 10
@@ -226,7 +225,7 @@ if st.button("Compute Z-Score"):
         mean_ref = row.mean_mm
         sd_ref   = row.sd_mm
 
-    # Display in the same unit the user chose
+    # 6) Display the reference
     st.write(
         f"Reference (ages {age_label}): "
         f"mean = {mean_ref:.2f} {unit}, "
