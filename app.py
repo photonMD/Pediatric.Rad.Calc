@@ -218,8 +218,20 @@ if st.button("Compute Z-Score"):
 
     st.write(f"**Z-score:** {z:.2f}")
     st.write(f"**Interpretation:** {verdict}")
-    age_label = format_age_range(row.age_min_months, row.age_max_months)
-    st.write(f"Reference (ages {age_label}): mean = {row.mean_mm} mm, SD = {row.sd_mm} mm")
+    # Convert reference stats into the selected unit
+if unit == "cm":
+    mean_ref = row.mean_mm / 10
+    sd_ref   = row.sd_mm   / 10
+else:
+    mean_ref = row.mean_mm
+    sd_ref   = row.sd_mm
+
+# Display in the same unit the user chose
+st.write(
+    f"Reference (ages {age_label}): "
+    f"mean = {mean_ref:.2f} {unit}, "
+    f"SD = {sd_ref:.2f} {unit}"
+)
 
 
 # — Reference at bottom —
