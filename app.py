@@ -22,7 +22,7 @@ norms = load_normative_tables()
 
 # --- UI: select organ, enter age & measurement, then compute z-score ---
 
-st.title("Pediatric Organ Z-Score Calculator")
+st.title("Pediatric Organ Size Calculator")
 
 # — Center all buttons below images —
 st.markdown(
