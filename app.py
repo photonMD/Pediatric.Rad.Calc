@@ -40,17 +40,17 @@ st.markdown(
 # --- Organ selector via images + button below (reordered & relabeled) ---
 # Ensure a default organ is selected
 if "selected_organ" not in st.session_state:
-    st.session_state.selected_organ = "right_kidney_length"
+    st.session_state.selected_organ = "right_lobe_liver_length"
 
 def select_organ(name):
     st.session_state.selected_organ = name
 
 # 1) Define the exact order and display labels you want:
 ordered_organs = [
-    "right_kidney_length",
-    "left_kidney_length",
     "right_lobe_liver_length",
-    "spleen_length"
+    "spleen_length",
+    "right_kidney_length",
+    "left_kidney_length"
 ]
 display_names = {
     "right_kidney_length": "Right Kidney",
