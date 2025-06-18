@@ -189,49 +189,50 @@ if st.button("Compute Z-Score"):
         (age_months <= table.age_max_months)
     ]
     if match.empty:
-        # fallback to first or last row
-        if age_months < table.age_min_months.min():
-            row = table.iloc[0]
-        else:
-            row = table.iloc[-1]
+        row = table.iloc[0] if age_months < table.age_min_months.min() else table.iloc[-1]
         st.warning(
-            f"Age ({age_input}) out of range. "
-            f"Using nearest data for "
+            f"Age ({age_input}) out of range. Using data for "
             f"{format_age_range(row.age_min_months, row.age_max_months)}."
         )
     else:
         row = match.iloc[0]
 
-    # 3) Compute z and interpretation
+    # 3) Compute and show z-score
     z = (meas_mm - row.mean_mm) / row.sd_mm
-    if z > 2:
-        verdict = "Too large"
-    elif z < -2:
+    st.write(f"**Z-score:** {z:.2f}")
+
+    # 4) Verdict based on suggested limits
+    lower = row.lower_mm
+    upper = row.upper_mm
+
+    if meas_mm < lower:
         verdict = "Too small"
+    elif meas_mm > upper:
+        verdict = "Too large"
     else:
         verdict = "Within normal limits"
 
-    st.write(f"**Z-score:** {z:.2f}")
     st.write(f"**Interpretation:** {verdict}")
 
-    # 4) Format age label
+    # 5) (Optional) Show reference stats and limits in chosen unit
     age_label = format_age_range(row.age_min_months, row.age_max_months)
-
-    # 5) Convert reference stats into selected unit
     if unit == "cm":
-        mean_ref = row.mean_mm / 10
-        sd_ref   = row.sd_mm   / 10
+        mean_disp  = row.mean_mm / 10
+        sd_disp    = row.sd_mm   / 10
+        lower_disp = lower       / 10
+        upper_disp = upper       / 10
     else:
-        mean_ref = row.mean_mm
-        sd_ref   = row.sd_mm
+        mean_disp  = row.mean_mm
+        sd_disp    = row.sd_mm
+        lower_disp = lower
+        upper_disp = upper
 
-    # 6) Display the reference
     st.write(
-        f"Reference (ages {age_label}): "
-        f"mean = {mean_ref:.2f} {unit}, "
-        f"SD = {sd_ref:.2f} {unit}"
+        f"Reference (ages {age_label}): mean = {mean_disp:.2f} {unit}, SD = {sd_disp:.2f} {unit}"
     )
-
+    st.write(
+        f"Suggested limits: {lower_disp:.2f}–{upper_disp:.2f} {unit}"
+    )
 
 # — Reference at bottom —
 st.markdown("---")  # horizontal rule
