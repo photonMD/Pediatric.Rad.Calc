@@ -227,11 +227,16 @@ if st.button("Compute Z-Score"):
         lower_disp = lower
         upper_disp = upper
 
+    # display reference stats
     st.write(
-        f"Reference (ages {age_label}): mean = {mean_disp:.2f} {unit}, SD = {sd_disp:.2f} {unit}"
+        f"Reference (ages {age_label}): mean = {mean_disp:.2f} {unit}, "
+        f"SD = {sd_disp:.2f} {unit}"
     )
+
+    # display the age‐specific suggested limits
     st.write(
-        f"Suggested limits: {lower_disp:.2f}–{upper_disp:.2f} {unit}"
+        f"**Suggested limits for age {age_input} ({age_label}):** "
+        f"{lower_disp:.2f}–{upper_disp:.2f} {unit}"
     )
 
 # — Reference at bottom —
